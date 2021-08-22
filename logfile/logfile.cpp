@@ -2,6 +2,9 @@
 
 using namespace std;
 
+#define START (0)
+#define END (1)
+
 typedef struct element
 {
     int time;
@@ -9,50 +12,57 @@ typedef struct element
     bool not_start;
 } element;
 
-element log_files[101];
+element log_files[201];
 bool is_error = false;
 
 int main(void)
 {
-    int userCount, recordCount;
-    cin >> userCount >> recordCount;
+    int usercount, recordcount;
+    cin >> usercount >> recordcount;
 
-    for (size_t i = 1; i <= userCount; i++)
+    for (size_t i = 1; i <= usercount; i++)
     {
         log_files[i].not_start = true;
     }
-    for (size_t i = 0; i < recordCount; i++)
+    for (size_t i = 0; i < recordcount; i++)
     {
         int t, u, b;
         cin >> t >> u >> b;
-        if (log_files[u].not_start)
+        if (!is_error)
         {
-            log_files[u].time = t;
-            if (b == 1)
+            if (log_files[u].not_start)
             {
-                is_error = true;
+                log_files[u].time = t;
+                if (b == END)
+                {
+                    is_error = true;
+                }
+                log_files[u].start_or_end = b;
+                log_files[u].not_start = false;
             }
-            log_files[u].start_or_end = b;
-            log_files[u].not_start = false;
-        }
-        else
-        {
-            if (t - log_files[u].time < 60 || log_files[u].start_or_end == b)
+            else
             {
-                is_error = true;
+                if (log_files[u].start_or_end == b)
+                {
+                    is_error = true;
+                }
+                else if (t - log_files[u].time < 60 && b == END)
+                {
+                    is_error = true;
+                }
+                log_files[u].time = t;
+                log_files[u].start_or_end = b;
             }
-            log_files[u].time = t;
-            log_files[u].start_or_end = b;
         }
     }
 
-    for (size_t i = 1; i <= userCount; i++)
+    for (size_t i = 1; i <= usercount; i++)
     {
-        if (!log_files[i].not_start && log_files[i].start_or_end == 0)
+        if (!log_files[i].not_start && log_files[i].start_or_end == START)
         {
             is_error = true;
         }
     }
-    is_error ? cout << "NO" : cout << "YES";
+    cout << (is_error ? "NO" : "YES");
     return 0;
 }
